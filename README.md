@@ -39,7 +39,7 @@ A container is similar to a Virtual Machine in that both are closed boxes (separ
 
 Virtualization enables you to run multiple operating systems on the hardware of a single physical server, while containerization enables you to deploy multiple applications using the same operating system on a single virtual machine or server.
 
-So, the difference are:
+So, the differences are:
 
 - Docker is much more lightweight (takes up less space, resources).
 - Start-up time is much faster. Faster, in any situation.
@@ -103,6 +103,8 @@ On the task we will see how to push it.
 - Containers: Isolated environments that run an instance of an image. A container is a standard unit of software that packages up code and all its dependencies so the application runs quickly and reliably from one computing environment to another.
 
 - Images: A read only template that contains set instructions for creating a container. Docker images contain executable application source code as well as all the tools, libraries, and dependencies that the application code needs to run as a container. When you run the Docker image, it becomes one instance (or multiple instances) of the container.
+
+- Dockerfile: every Docker container starts with a simple text file containing instructions for how to build the Docker container image. DockerFile automates the process of Docker image creation. It’s essentially a list of commands that Docker Engine will run in order to assemble the image.
 
 ## Mircroservice
 
@@ -221,7 +223,7 @@ We will see an example on the tasks.
 __Stages:__
 - pull
 - check the images
-- ps to see in the containers exists
+- ps to see if the containers exists
 
 __To create a docker with a specific image:__
 - `docker pull ghost`
@@ -249,15 +251,15 @@ __Go to inside of the docker:__
 - Inside: `cd /usr/share/nginx/html`, then `apt-get install nano`, go inside `nano index.html` and modify the title.
 - Go again to the browser and refresh and boom! You can see the magic. We do not need to restart anything.
 
-## Task
+## Task of creating an nginx image customised and push it to your docker hub
 
 - Create docker hub account and a repo called eng84 on docker hub.
 - Build a customised image with the index.html that we created together in the class (In our local machine).
 - Push the image to your docker hub repo.
 
-_Solution:_
+__Solution:__
 
-- How to create an image with the new `index.html` file:
+__- How to create an image with the new `index.html` file:__
 
 1. Run a docker with nginx server:
 
@@ -311,7 +313,7 @@ Check is working:
 
 `docker ps` and go to the browser and enter: `localhost:88` and you will see your new html updated.
 
-- How to push the image to your docker hub repository:
+__- How to push the image to your docker hub repository:__
 
 1. Log in: `docker login`
 
@@ -324,3 +326,38 @@ Check is working:
 4. Before pushing see if the new image was created: `docker images`. If everything is right: `docker push josetorres31/eng84_jose_nginx:latest`.
 
 5. Go to your Docker hub account to check that. Then try to pull to see if everything is right -> AMAZING!
+
+## Automate the build steps of our nginx customised images
+
+- How? By using Dockerfile with set of instructions.
+- Naming convention to create Dockerfile is `Dockerfile`.
+
+````Dockerfile
+# We need to use nginx official image as our base image
+# We will use a key word called FROM
+
+FROM nginx
+# Here we using nginx official image as our base image
+
+LABEL MAINTAINER = eng84jose
+# Using label is a good practice but optional
+
+COPY app1 /usr/share/nginx/html
+#copying our app1 folder from our OS to default index.html location
+
+EXPOSE 80
+# Expose is the keyword to use to expose the required port for the base image
+
+CMD ["nginx", "-g", "daemon off;"]
+# CMD will execute the command in this case as this information/instructions taken from the official image
+````
+
+After that, go to your folder where you have `Dockerfile` and create the docker with the image:
+
+`docker build -t josetorres31/eng84_jose_dockerfile .` -> Go to yourbrowser and check that. Then push it to your github.
+
+THIS IS WAY WE AUTOMATE OUR TASKS, WITH ONE FILE TO RUN THE COMMANDS, CREATE THE IMAGE AND CREATE THE CONTAINER!
+
+- Download an image of docker official documentation and run it one container:
+
+`docker run -d -p 4000:4000 docs/docker.github.io` -> go inside and explore it
